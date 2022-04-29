@@ -215,23 +215,23 @@ App = {
   handleCreate:function(str1, amnt, prd, desc){
     var str32name;
     var weitoEth;
-    var desc_32;
+   
     var periodsecs;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(str1);
-      weitoEth=amnt*value;
-      if(prd=="month"){
+      weitoEth=amnt*1000000000000000000;
+      if((prd).equalsIgnoreCase("month")){
           periodsecs=2628000;
       }
-      if(prd=="year"){
+      if((prd).equalsIgnoreCase("year")){
         periodsecs=31536000;
       }
-      desc_32=ethers.utils.formatBytes32String(desc);
+     // desc_32=ethers.utils.formatBytes32String(desc);// dont need this, already a string
       web3.eth.getAccounts( function(error, accounts){
         var account = accounts[0];
         App.contracts.Cryptofans.deployed().then(function (instance) {
         accessinstance=instance;
-        return accessinstance.createSubscription(str32name,weitoEth, desc_32, periodsecs, {from: account}); // added from parameter
+        return accessinstance.createSubscription(str32name,weitoEth, periodsecs, desc, {from: account}); // added from parameter
         }).then(function (result) {
           if(result){
             console.log("proposal loaded");
