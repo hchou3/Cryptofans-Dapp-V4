@@ -214,34 +214,6 @@ App = {
     });
   },
   handleCreate:function(str1, amnt, prd, desc){
-<<<<<<< Updated upstream
-    var str32name;
-    var weitoEth;
-   
-    var periodsecs;
-    var accessinstance;
-    str32name=ethers.utils.formatBytes32String(str1);
-      weitoEth=amnt*1000000000000000000;
-      if((prd).equalsIgnoreCase("month")){
-          periodsecs=2628000;
-      }
-      if((prd).equalsIgnoreCase("year")){
-        periodsecs=31536000;
-      }
-     // desc_32=ethers.utils.formatBytes32String(desc);// dont need this, already a string
-      web3.eth.getAccounts( function(error, accounts){
-        var account = accounts[0];
-        App.contracts.Cryptofans.deployed().then(function (instance) {
-        accessinstance=instance;
-        return accessinstance.createSubscription(str32name,weitoEth, periodsecs, desc, {from: account}); // added from parameter
-        }).then(function (result) {
-          if(result){
-            console.log("proposal loaded");
-            if(parseInt(result.receipt.status) == 1)
-            alert(account + " voting done successfully")
-            else
-            alert(account + " voting not done successfully due to revert")
-=======
     var str32name;// bytes32 id
     var weitoEth;// payment amount
     var periodsecs;// monthly or yearly period
@@ -267,7 +239,6 @@ App = {
           alert(console.log("proposal loaded"));
         else
           alert("creation not done successfully due to revert")
->>>>>>> Stashed changes
         } else {
           alert("creation failed")
         }  
