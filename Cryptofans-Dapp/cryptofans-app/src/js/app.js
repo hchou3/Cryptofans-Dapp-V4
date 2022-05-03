@@ -70,7 +70,7 @@ App = {
    });
      $(document).on('click', '#prov_onoff', function(){
       App.populateAddress().then(r => App.handler = r[0]);
-      App.handleToggleS(jQuery('#sub_toggle').val());
+      App.handleToggle(jQuery('#sub_toggle').val());
    });
      $(document).on('click', '#prov_view', function(){
       App.populateAddress().then(r => App.handler = r[0]);
@@ -89,29 +89,28 @@ App = {
   
 
   handleSubReg: function(){
-    var cfans_instance
+    var cfans_instance;
     web3.eth.getAccounts( function(error, accounts){
     var account = accounts[0];
     App.contracts.Cryptofans.deployed().then( function(instance) {
       cfans_instance=instance;
-      console.log("contract instance formed");
       return cfans_instance.registerasSubscriber({from: account});
     }).then(function(result, err){
       if(result){
         console.log("function registered as subscriber");
         if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " subscriber register done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " subscriber register not done successfully due to revert")
           } else {
-          alert(account + " voting failed")
+          alert(account + " subscriber register failed")
           }   
       });
     });
   },
 
   handleProvReg:function(){
-    var cfans_instance
+    var cfans_instance;
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then( function(instance) {
@@ -121,17 +120,18 @@ App = {
             if(result){
                 console.log("function registered as a provider");
                 if(parseInt(result.receipt.status) == 1)
-                alert(account + " voting done successfully")
+                alert(account + " provider register done successfully")
                 else
-                alert(account + " voting not done successfully due to revert")
+                alert(account + " provider register not done successfully due to revert")
             } else {
-                alert(account + " voting failed")
+                alert(account + " provider register failed")
             }   
         });
     });
   },
 
   handleFind:function(SubscriptionName){
+    var cfans_instance;
     var subnameto32=ethers.utils.formatBytes32String(SubscriptionName);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
@@ -140,19 +140,20 @@ App = {
         return cfans_instance.findSubscription(subnameto32, {from: account});
       }).then(function(result, err){
             if(result){
-                console.log("proposal loaded");
+                console.log("Subcripton name found");
                 if(parseInt(result.receipt.status) == 1)
-                alert(account + " voting done successfully")
+                alert(account + " name found successfully")
                 else
-                alert(account + " voting not done successfully due to revert")
+                alert(account + " name search not done successfully due to revert")
             } else {
-                alert(account + " voting failed")
+                alert(account + " name searching failed")
             }   
         });
     });
   },
   handleUnsub:function(subs_name){
     var str32name;
+    var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
@@ -161,19 +162,20 @@ App = {
       return accessinstance.unsub_to_plan(str32name ,{from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
+          console.log("address unsubbed");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " unsub done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " unsub not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " unsub failed")
       }  
       });
     });
   },
   handleSub:function(subs_name){
     var str32name;
+    var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
@@ -195,6 +197,7 @@ App = {
   },
   handleAccess:function(subs_name){
     var str32name;
+    var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
@@ -222,16 +225,18 @@ App = {
     str32name=ethers.utils.formatBytes32String(str1);
     weitoEth=amnt*App.value;
     if(prd=="Monthly"){
-      periodsecs=2628000;
+      periodsecs= 2628000;
     }
-    if(prd=="Yearly"){
-      periodsecs=31536000;
+    else if(prd=="Yearly"){
+      periodsecs= 31536000;
+    } else{
+      periodsecs= -1;
     }
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
     App.contracts.Cryptofans.deployed().then(function (instance) {
       accessinstance=instance;
-      return accessinstance.createSubscription(str32name,weitoEth, periodsecs, desc, {from: account}); // added from parameter
+      return accessinstance.createSubscription(str32name, weitoEth, periodsecs, desc, {from: account}); // added from parameter
     }).then(function (result) {
       if(result){
         console.log("proposal created");
@@ -248,6 +253,7 @@ App = {
   
   handleToggle:function(props_name){
     var str32name;
+    var accessinstance;
     str32name=ethers.utils.formatBytes32String(props_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
@@ -258,18 +264,19 @@ App = {
         if(result){
           console.log("proposal toggled");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " toggling done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " toggling not done successfully due to revert")
       } else {
-        alert(account + " voting failed")
+        alert(account + " toggling failed")
       }  
       });
     });
   },
-  
+
   handleView:function(props_name){
     var str32name;
+    var accessinstance;
     str32name=ethers.utils.formatBytes32String(props_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
@@ -278,6 +285,7 @@ App = {
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
+          console.log(result.receipt);
           console.log("view done");
           if(parseInt(result.receipt.status)== 1)
           alert(account + " voting done successfully")
@@ -302,13 +310,13 @@ App = {
       return accessinstance.collect(addr, weiamount,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
+          console.log("ethereum transferred to" + account + "metamask address");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " eth transferred successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " eth transfer not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " eth transfer failed")
       }  
       });
     }); 
