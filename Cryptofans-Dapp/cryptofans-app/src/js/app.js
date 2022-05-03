@@ -66,7 +66,7 @@ App = {
    });
      $(document).on('click', '#prov_create', function(){
       App.populateAddress().then(r => App.handler = r[0]);
-      App.handleCreate(jQuery('#create_name').val(),jQuery('#create_cost').val(),jQuery('#create_period').val(),jQuery('#create_desc').val(),);
+      App.handleCreate(jQuery('#create_name').val(),jQuery('#create_cost').val(),jQuery('#create_period').val(),jQuery('#create_desc').val());
    });
      $(document).on('click', '#prov_onoff', function(){
       App.populateAddress().then(r => App.handler = r[0]);
@@ -89,27 +89,29 @@ App = {
   
 
   handleSubReg: function(){
-      web3.eth.getAccounts( function(error, accounts){
-      var account = accounts[0];
-      App.contracts.Cryptofans.deployed().then( function(instance) {
-        cfans_instance=instance;
-        console.log("contract instance formed");
-        return cfans_instance.registerasSubscriber({from: account});
-      }).then(function(result, err){
-            if(result){
-                console.log("function registered");
-                if(parseInt(result.receipt.status) == 1)
-                alert(account + " voting done successfully")
-                else
-                alert(account + " voting not done successfully due to revert")
-            } else {
-                alert(account + " voting failed")
-            }   
-        });
+    var cfans_instance
+    web3.eth.getAccounts( function(error, accounts){
+    var account = accounts[0];
+    App.contracts.Cryptofans.deployed().then( function(instance) {
+      cfans_instance=instance;
+      console.log("contract instance formed");
+      return cfans_instance.registerasSubscriber({from: account});
+    }).then(function(result, err){
+      if(result){
+        console.log("function registered as subscriber");
+        if(parseInt(result.receipt.status) == 1)
+          alert(account + " voting done successfully")
+          else
+          alert(account + " voting not done successfully due to revert")
+          } else {
+          alert(account + " voting failed")
+          }   
+      });
     });
   },
 
   handleProvReg:function(){
+    var cfans_instance
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then( function(instance) {
@@ -130,7 +132,7 @@ App = {
   },
 
   handleFind:function(SubscriptionName){
-    subnameto32=ethers.utils.formatBytes32String(SubscriptionName);
+    var subnameto32=ethers.utils.formatBytes32String(SubscriptionName);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then( function(instance) {
@@ -215,35 +217,33 @@ App = {
   handleCreate:function(str1, amnt, prd, desc){
     var str32name;
     var weitoEth;
-   
     var periodsecs;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(str1);
-      weitoEth=amnt*1000000000000000000;
-      if((prd).equalsIgnoreCase("month")){
-          periodsecs=2628000;
-      }
-      if((prd).equalsIgnoreCase("year")){
-        periodsecs=31536000;
-      }
-     // desc_32=ethers.utils.formatBytes32String(desc);// dont need this, already a string
-      web3.eth.getAccounts( function(error, accounts){
-        var account = accounts[0];
-        App.contracts.Cryptofans.deployed().then(function (instance) {
-        accessinstance=instance;
-        return accessinstance.createSubscription(str32name,weitoEth, periodsecs, desc, {from: account}); // added from parameter
-        }).then(function (result) {
-          if(result){
-            console.log("proposal loaded");
-            if(parseInt(result.receipt.status) == 1)
-            alert(account + " voting done successfully")
-            else
-            alert(account + " voting not done successfully due to revert")
+    weitoEth=amnt*App.value;
+    if(prd=="Monthly"){
+      periodsecs=2628000;
+    }
+    if(prd=="Yearly"){
+      periodsecs=31536000;
+    }
+    web3.eth.getAccounts( function(error, accounts){
+      var account = accounts[0];
+    App.contracts.Cryptofans.deployed().then(function (instance) {
+      accessinstance=instance;
+      return accessinstance.createSubscription(str32name,weitoEth, periodsecs, desc, {from: account}); // added from parameter
+    }).then(function (result) {
+      if(result){
+        console.log("proposal created");
+        if(parseInt(result.receipt.status) == 1)
+        alert(account + " proposal created successfully")
+        else
+        alert(account + " creation not done successfully due to revert")
         } else {
-            alert(account + " voting failed")
+        alert(account + " creation failed")
         }  
         });
-      });
+    });
   },
   
   handleToggle:function(props_name){
@@ -256,7 +256,7 @@ App = {
       return accessinstance.on_off_switch(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
+          console.log("proposal toggled");
           if(parseInt(result.receipt.status) == 1)
           alert(account + " voting done successfully")
           else
@@ -267,7 +267,7 @@ App = {
       });
     });
   },
-  handleView:function(str32name){
+  handleView:function(props_name){
     var str32name;
     str32name=ethers.utils.formatBytes32String(props_name);
     web3.eth.getAccounts( function(error, accounts){
@@ -277,15 +277,15 @@ App = {
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
-          if(parseInt(result.receipt.status) == 1)
+          console.log("view done");
+          if(parseInt(result.receipt.status)== 1)
           alert(account + " voting done successfully")
           else
           alert(account + " voting not done successfully due to revert")
-      } else {
+        } else {
           alert(account + " voting failed")
-      }  
-      });
+        }  
+        });
     });
   },
   handleTransfer:function(addr, amount){
