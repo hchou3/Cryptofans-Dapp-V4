@@ -276,8 +276,9 @@ App = {
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
+          console.log(result)
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " view done")
+          alert(" view done")
           else
           alert(account + " view not done successfully due to revert")
       } else {

@@ -144,7 +144,6 @@ contract Cryptofans{
         //dependent of view subs functon
         //^^^Increment both keys and provider counts when supporting multiple proposals
     }
-   
     // address 1 = bytes32"netflix" with key 0, "youtube" w key 1
     // address 2 = bytes32"netflix" with key 0, "hulu" w key 1  
 
