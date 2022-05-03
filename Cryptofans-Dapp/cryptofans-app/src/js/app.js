@@ -214,31 +214,32 @@ App = {
     });
   },
   handleCreate:function(str1, amnt, prd, desc){
-    var str32name;// bytes32 id
-    var weitoEth;// payment amount
-    var periodsecs;// monthly or yearly period
-    var accessinstance;// instance of deployed contract 
-
-    str32name=ethers.utils.formatBytes32String(str1);// input name to bytes32 
-    weitoEth=amnt*App.value;// amt*1000000000000000000
-    if(prd=="month"){// set the period
-     periodsecs=2628000;// if month
-    }
-    else if(prd=="year"){
-     periodsecs=31536000;// if year 
-    }
-
-    web3.eth.getAccounts( function(error, accounts){
-      var account = accounts[0];
-      App.contracts.Cryptofans.deployed().then(function (instance) {
-      accessinstance=instance;
-      return accessinstance.createSubscription(str32name, weitoEth, periodsecs, desc, {from: account}); // added from parameter
-      }).then(function (result) {
-      if(result){
-        if(parseInt(result.receipt.status) == 1)
-          alert(console.log("proposal loaded"));
-        else
-          alert("creation not done successfully due to revert")
+    var str32name;
+    var weitoEth;
+    var desc_32;
+    var periodsecs;
+    var accessinstance;
+    str32name=ethers.utils.formatBytes32String(str1);
+      weitoEth=amnt*value;
+      if(prd=="month"){
+          periodsecs=2628000;
+      }
+      if(prd=="year"){
+        periodsecs=31536000;
+      }
+      desc_32=ethers.utils.formatBytes32String(desc);
+      web3.eth.getAccounts( function(error, accounts){
+        var account = accounts[0];
+        App.contracts.Cryptofans.deployed().then(function (instance) {
+        accessinstance=instance;
+        return accessinstance.createSubscription(str32name,weitoEth, desc_32, periodsecs, {from: account}); // added from parameter
+        }).then(function (result) {
+          if(result){
+            console.log("proposal loaded");
+            if(parseInt(result.receipt.status) == 1)
+            alert(account + " voting done successfully")
+            else
+            alert(account + " voting not done successfully due to revert")
         } else {
           alert("creation failed")
         }  
