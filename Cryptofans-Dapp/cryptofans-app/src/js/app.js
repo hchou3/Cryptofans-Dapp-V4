@@ -262,11 +262,12 @@ App = {
           else
           alert(account + " voting not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+        alert(account + " voting failed")
       }  
       });
     });
   },
+  
   handleView:function(props_name){
     var str32name;
     str32name=ethers.utils.formatBytes32String(props_name);
@@ -288,6 +289,7 @@ App = {
         });
     });
   },
+
   handleTransfer:function(addr, amount){
     // function invoked after claiming payments
     //toHex conversion to support big numbers
