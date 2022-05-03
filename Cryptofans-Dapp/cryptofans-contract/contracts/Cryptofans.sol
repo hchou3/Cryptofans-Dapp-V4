@@ -94,7 +94,7 @@ contract Cryptofans{
             
             revert("A subscription plan with this name already exists, use another name");
         }
-        if(proposals[name].name!=0x0000000000000000000000000000000000000000000000000000000000000000){
+        if(name==0x0000000000000000000000000000000000000000000000000000000000000000){
             revert("not a valid address");
         }
         if ((period != MONTH && period != YEAR_IN_SECONDS) ){

@@ -285,7 +285,7 @@ App = {
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log(result.receipt);
+          console.log(result);
           console.log("view done");
           if(parseInt(result.receipt.status)== 1)
           alert(account + " voting done successfully")
