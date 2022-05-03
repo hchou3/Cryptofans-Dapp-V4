@@ -10,7 +10,7 @@ App = {
     console.log("Checkpoint 0");
     return App.initWeb3();
   },
-
+  //0xC5Bdf71E29E4E4e3dEA87568CBd8503A2418f958
   initWeb3: function () {
     // Is there is an injected web3 instance?
     if (typeof web3 !== 'undefined') {
@@ -66,7 +66,7 @@ App = {
    });
      $(document).on('click', '#prov_create', function(){
       App.populateAddress().then(r => App.handler = r[0]);
-      App.handleCreate(jQuery('#create_name').val(),jQuery('#create_cost').val(),jQuery('#create_period').val(),jQuery('#create_desc').val(),);
+      App.handleCreate(jQuery('#create_name').val(),jQuery('#create_cost').val(),jQuery('#create_period').val(),jQuery('#create_desc').val());
    });
      $(document).on('click', '#prov_onoff', function(){
       App.populateAddress().then(r => App.handler = r[0]);
@@ -93,17 +93,17 @@ App = {
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then( function(instance) {
         cfans_instance=instance;
-        console.log("contract instance formed");
+        console.log("contract instance formed- subscribers reg");
         return cfans_instance.registerasSubscriber({from: account});
       }).then(function(result, err){
             if(result){
-                console.log("function registered");
+                console.log("function registered as subscriber");
                 if(parseInt(result.receipt.status) == 1)
-                alert(account + " voting done successfully")
+                alert(account + " reg done successfully")
                 else
-                alert(account + " voting not done successfully due to revert")
+                alert(account + " reg not done successfully due to revert")
             } else {
-                alert(account + " voting failed")
+                alert(account + " reg failed")
             }   
         });
     });
@@ -114,16 +114,17 @@ App = {
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then( function(instance) {
         cfans_instance=instance;
+        console.log("contract instance formed- providers reg");
         return cfans_instance.registerasProvider({from: account});
       }).then(function(result, err){
             if(result){
                 console.log("function registered as a provider");
                 if(parseInt(result.receipt.status) == 1)
-                alert(account + " voting done successfully")
+                alert(account + " reg done successfully")
                 else
-                alert(account + " voting not done successfully due to revert")
+                alert(account + " reg not done successfully due to revert")
             } else {
-                alert(account + " voting failed")
+                alert(account + " reg failed")
             }   
         });
     });
@@ -138,13 +139,13 @@ App = {
         return cfans_instance.findSubscription(subnameto32, {from: account});
       }).then(function(result, err){
             if(result){
-                console.log("proposal loaded");
+                console.log("proposal found");
                 if(parseInt(result.receipt.status) == 1)
-                alert(account + " voting done successfully")
+                alert(account + " prop found successfully")
                 else
-                alert(account + " voting not done successfully due to revert")
+                alert(account + " finding not done successfully due to revert")
             } else {
-                alert(account + " voting failed")
+                alert(account + " finding failed")
             }   
         });
     });
@@ -159,13 +160,13 @@ App = {
       return accessinstance.unsub_to_plan(str32name ,{from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
+          console.log("unsubbed");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " unsubbing done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " unsubbing not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " unsubbing failed")
       }  
       });
     });
@@ -180,13 +181,13 @@ App = {
       return accessinstance.sub_to_plan(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
+          console.log("subbed");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " subbing done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " subbing not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " subbing failed")
       }  
       });
     });
@@ -201,18 +202,19 @@ App = {
       return accessinstance.accessSubscription(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
+          console.log("access done");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " access done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " access not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " access failed")
       }  
       });
     });
   },
   handleCreate:function(str1, amnt, prd, desc){
+<<<<<<< Updated upstream
     var str32name;
     var weitoEth;
    
@@ -239,8 +241,35 @@ App = {
             alert(account + " voting done successfully")
             else
             alert(account + " voting not done successfully due to revert")
+=======
+    var str32name;// bytes32 id
+    var weitoEth;// payment amount
+    var periodsecs;// monthly or yearly period
+    var accessinstance;// instance of deployed contract 
+
+    str32name=ethers.utils.formatBytes32String(str1);// input name to bytes32 
+    weitoEth=amnt*App.value;// amt*1000000000000000000
+    if(prd=="month"){// set the period
+     periodsecs=2628000;// if month
+    }
+    else if(prd=="year"){
+     periodsecs=31536000;// if year 
+    }
+
+    web3.eth.getAccounts( function(error, accounts){
+      var account = accounts[0];
+      App.contracts.Cryptofans.deployed().then(function (instance) {
+      accessinstance=instance;
+      return accessinstance.createSubscription(str32name, weitoEth, periodsecs, desc, {from: account}); // added from parameter
+      }).then(function (result) {
+      if(result){
+        if(parseInt(result.receipt.status) == 1)
+          alert(console.log("proposal loaded"));
+        else
+          alert("creation not done successfully due to revert")
+>>>>>>> Stashed changes
         } else {
-            alert(account + " voting failed")
+          alert("creation failed")
         }  
         });
       });
@@ -256,18 +285,17 @@ App = {
       return accessinstance.on_off_switch(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " toggle done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " toggle not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " toggle failed")
       }  
       });
     });
   },
-  handleView:function(str32name){
+  handleView: function(props_name){
     var str32name;
     str32name=ethers.utils.formatBytes32String(props_name);
     web3.eth.getAccounts( function(error, accounts){
@@ -277,13 +305,12 @@ App = {
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " view done")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " view not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " view failed")
       }  
       });
     });
@@ -302,11 +329,11 @@ App = {
         if(result){
           console.log("proposal loaded");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " transfer done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " transfer not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " transfer failed")
       }  
       });
     }); 

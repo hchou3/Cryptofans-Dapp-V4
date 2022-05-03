@@ -44,13 +44,13 @@ contract Cryptofans{
         uint key;//-> act like a hash 
         address creator; 
     }
-    //0xC5Bdf71E29E4E4e3dEA87568CBd8503A2418f958
+    
     function registerasSubscriber () public {
         // if statement to check if they already registered
         // nested mapping goes here??
         if (subscribers[msg.sender].registered == true){
 
-            revert("You are already registered");
+            revert("You are already registered to subscribers");
 
             // change revert function to whatever necessary if it doesnt work
         }
@@ -65,7 +65,7 @@ contract Cryptofans{
         // if statement to check if ti exists
         if (providers[msg.sender].registered == true){
 
-            revert("You are already registered");
+            revert("You are already registered to providers");
 
             // change revert function to whatever necessary if it doesnt work
         }else {
@@ -108,7 +108,7 @@ contract Cryptofans{
         }
         providers[msg.sender].numproposal = providers[msg.sender].numproposal + 1; // proposal count begins at 1
         proposals[name] = Proposal(name, cost, period, true, true, description, key_num, msg.sender); // registers proposal
-        proposals[name].active = true ; // turns on activity 
+        proposals[name].active = true; // turns on activity 
     }
 
     //warn subscribers they are about to purchase subscription(proposal)
