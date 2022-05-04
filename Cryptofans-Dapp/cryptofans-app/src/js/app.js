@@ -7,7 +7,6 @@ App = {
   handler:null,
   value:1000000000000000000,
   init: function() {
-    console.log("Checkpoint 0");
     return App.initWeb3();
   },
 
@@ -20,15 +19,12 @@ App = {
       App.web3Provider = new Web3.providers.HttpProvider(App.url);
     }
     web3 = new Web3(App.web3Provider);
-
-    console.log("Checkpoint 1");
     ethereum.enable();//ex
     return App.initContract();
   },
 
   initContract: function() { 
     // let deploy_cont = new web3.eth.Contract(JSON.parse(abi))
-    console.log("Checkpoint 2");
      $.getJSON('Cryptofans.json', function (data) {
        App.contracts.Cryptofans = TruffleContract(data);
        App.contracts.Cryptofans.setProvider(App.web3Provider);
@@ -59,6 +55,7 @@ App = {
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleUnsub(jQuery('#sub_namesub3').val());
    });
+
      //prov.html + prov_func.html
      $(document).on('click', '#prov_reg', function(){
       App.populateAddress().then(r => App.handler = r[0]);
@@ -87,7 +84,6 @@ App = {
       return await ethereum.request({method : 'eth_requestAccounts'});
   },  
   
-
   handleSubReg: function(){
     var cfans_instance;
     web3.eth.getAccounts( function(error, accounts){
@@ -97,7 +93,6 @@ App = {
       return cfans_instance.registerasSubscriber({from: account});
     }).then(function(result, err){
       if(result){
-        console.log(result.receipt);
         console.log("function registered as subscriber");
         if(parseInt(result.receipt.status) == 1)
           alert(account + " subscriber register done successfully")
@@ -119,7 +114,6 @@ App = {
         return cfans_instance.registerasProvider({from: account});
       }).then(function(result, err){
             if(result){
-                console.log(result.receipt);
                 console.log("function registered as a provider");
                 if(parseInt(result.receipt.status) == 1)
                 alert(account + " provider register done successfully")
@@ -153,6 +147,7 @@ App = {
         });
     });
   },
+
   handleUnsub:function(subs_name){
     var str32name;
     var accessinstance;
@@ -175,28 +170,31 @@ App = {
       });
     });
   },
-  handleSub:function(subs_name){
+
+  handleSub:function(subs_name){//params:proposal name   o/inputs: eth amount, account to send to
     var str32name;
+    //var weiamount= App.web3.utils.toWei(amount, 'ether');
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then(function (instance) {
       accessinstance=instance;
-      return accessinstance.sub_to_plan(str32name,  {from: account}); // added from parameter
-      }).then(function (result) {
-        if(result){
-          console.log("proposal loaded");
-          if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
-          else
-          alert(account + " voting not done successfully due to revert")
+      return accessinstance.sub_to_plan(str32name, {from: account}); // added from parameter
+    }).then(function (result) {
+      if(result){
+         console.log("subscribed to" + subs_name);
+         if(parseInt(result.receipt.status) == 1)
+         alert(account + " sub done successfully")
+         else
+         alert(account + " sub not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+         alert(account + " sub failed")
       }  
       });
     });
   },
+
   handleAccess:function(subs_name){
     var str32name;
     var accessinstance;
@@ -208,17 +206,18 @@ App = {
       return accessinstance.accessSubscription(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("proposal loaded");
+          console.log("accessed subscription");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " voting done successfully")
+          alert(account + " accessing done successfully")
           else
-          alert(account + " voting not done successfully due to revert")
+          alert(account + " access not done successfully due to revert")
       } else {
-          alert(account + " voting failed")
+          alert(account + " access failed")
       }  
       });
     });
   },
+
   handleCreate:function(str1, amnt, prd, desc){
     var str32name;
     var weitoEth;

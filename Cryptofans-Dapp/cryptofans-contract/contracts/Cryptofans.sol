@@ -5,7 +5,7 @@ pragma solidity >=0.6.0 <0.9.0;
 contract Cryptofans{
 
 
- uint constant MONTH= 2628000;
+    uint constant MONTH= 2628000;
     uint constant YEAR_IN_SECONDS = 31536000;
     
 
