@@ -45,7 +45,7 @@ App = {
    });
      $(document).on('click', '#sub_plan', function(){
       App.populateAddress().then(r => App.handler = r[0]);
-      App.handleSub(jQuery('#sub_namesub1').val());
+      App.handleSub(jQuery('#sub_namesub1').val(),1);
    });
      $(document).on('click', '#sub_access', function(){
       App.populateAddress().then(r => App.handler = r[0]);
@@ -170,20 +170,20 @@ App = {
       });
     });
   },
-
-  handleSub:function(subs_name){//params:proposal name   o/inputs: eth amount, account to send to
+  //0x6e6574666c697800000000000000000000000000000000000000000000000000
+  handleSub:function(subs_name, amount){//params:proposal name   o/inputs: eth amount, account to send to
     var str32name;
-    //var weiamount= App.web3.utils.toWei(amount, 'ether');
+    var weiamount= App.value*amount;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then(function (instance) {
       accessinstance=instance;
-      return accessinstance.sub_to_plan(str32name, {from: account}); // added from parameter
+      console.log(str32name);
+      return accessinstance.sub_to_plan(str32name, {from: weiamount}, {from: account}); // added from parameter
     }).then(function (result) {
       if(result){
-         console.log("subscribed to" + subs_name);
          if(parseInt(result.receipt.status) == 1)
          alert(account + " sub done successfully")
          else
@@ -237,6 +237,7 @@ App = {
       var account = accounts[0];
     App.contracts.Cryptofans.deployed().then(function (instance) {
       accessinstance=instance;
+      console.log(str32name);
       return accessinstance.createSubscription(str32name, weitoEth, periodsecs, desc, {from: account}); // added from parameter
     }).then(function (result) {
       if(result){

@@ -34,13 +34,11 @@ contract Cryptofans{
     
     struct Proposal { 
         bytes32 name;   //(?) short name (up to 32 bytes) X 
-        //uint idvalue ;
         uint cost;
         uint256 period;// (   billed cycle in days )
         bool active; // active or not
         bool name_taken;
         string description;
-        //mapping(uint256 => address[]) ;
         uint key;//-> act like a hash 
         address creator; 
     }
@@ -115,7 +113,6 @@ contract Cryptofans{
     function pay(bytes32 prop_h) public payable onlySubscriber{
         if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
             revert("Payment up to date.");
-            
         }else{ 
             address payable payable_creator=payable(proposals[prop_h].creator);
             payable_creator.transfer(proposals[prop_h].cost);
@@ -133,10 +130,16 @@ contract Cryptofans{
     }
 
     function sub_to_plan(bytes32 prop_h) public payable onlySubscriber{
+        if(proposals[prop_h].name_taken == false){
+            revert("there is no subscription of this name");
+        }
+        if(proposals[prop_h].active == false){
+            revert("this subscription is not active");
+        }
         if(info_by_prop[msg.sender][prop_h].in_use == true){
             revert("you are already subscribed.");
         }
-        info_by_prop[msg.sender][prop_h]=subPlan(true, block.timestamp,block.timestamp);
+        info_by_prop[msg.sender][prop_h]=subPlan(true, block.timestamp, block.timestamp);
         info_by_prop[msg.sender][prop_h].next_payday = block.timestamp;
         info_by_prop[msg.sender][prop_h].in_use = true;
         pay(prop_h);
