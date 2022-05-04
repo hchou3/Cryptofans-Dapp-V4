@@ -90,12 +90,12 @@ contract Cryptofans{
     
     function createSubscription(bytes32 name, uint cost, uint period, string memory description) onlyProvider public {
         //  if statement to check that proposal by this mname does not exist
+        if(name==0x0000000000000000000000000000000000000000000000000000000000000000 || name==0x0){
+            revert("not a valid address");
+        }
         if (proposals[name].name_taken == true){
             
             revert("A subscription plan with this name already exists, use another name");
-        }
-        if(name==0x0000000000000000000000000000000000000000000000000000000000000000){
-            revert("not a valid address");
         }
         if ((period != MONTH && period != YEAR_IN_SECONDS) ){
          

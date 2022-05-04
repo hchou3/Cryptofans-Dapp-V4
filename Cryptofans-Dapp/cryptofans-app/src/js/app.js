@@ -97,6 +97,7 @@ App = {
       return cfans_instance.registerasSubscriber({from: account});
     }).then(function(result, err){
       if(result){
+        console.log(result.receipt);
         console.log("function registered as subscriber");
         if(parseInt(result.receipt.status) == 1)
           alert(account + " subscriber register done successfully")
@@ -118,6 +119,7 @@ App = {
         return cfans_instance.registerasProvider({from: account});
       }).then(function(result, err){
             if(result){
+                console.log(result.receipt);
                 console.log("function registered as a provider");
                 if(parseInt(result.receipt.status) == 1)
                 alert(account + " provider register done successfully")
@@ -145,7 +147,7 @@ App = {
                 alert(account + " name found successfully")
                 else
                 alert(account + " name search not done successfully due to revert")
-            } else {
+            }else {
                 alert(account + " name searching failed")
             }   
         });
@@ -240,6 +242,8 @@ App = {
     }).then(function (result) {
       if(result){
         console.log("proposal created");
+        console.log(result.receipt);
+        console.log(result.receipt.status);
         if(parseInt(result.receipt.status) == 1)
         alert(account + " proposal created successfully")
         else
