@@ -1,5 +1,6 @@
 App = {
   web3Provider: null,
+  receiver: null,
   contracts: {},
   currentAccount:null,
   url: 'http://127.0.0.1:7545',
@@ -77,6 +78,10 @@ App = {
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleTransfer(jQuery('#eth_coll_add').val(), jQuery('#eth_amount').val());
    });
+      $(document).on('click', '#dopay', function(){
+      App.populateAddress().then(r => App.handler = r[0]);
+      App.handlePayment(jQuery('#payamt').val());
+ });
    },
 
    populateAddress : async function(){
@@ -109,6 +114,8 @@ App = {
     var cfans_instance;
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
+      console.log(accounts[0]);
+      console.log(accounts[1]);
       App.contracts.Cryptofans.deployed().then( function(instance) {
         cfans_instance=instance;
         return cfans_instance.registerasProvider({from: account});
@@ -159,7 +166,7 @@ App = {
       return accessinstance.unsub_to_plan(str32name ,{from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("address unsubbed");
+          console.log("address unsubbed from proposal");
           if(parseInt(result.receipt.status) == 1)
           alert(account + " unsub done successfully")
           else
@@ -192,48 +199,31 @@ App = {
       });
     });
   },
+  
 
-  handlePayment:function(subs_name){//helper function to handle pay()
-    var str32name= ethers.utils.formatBytes32String(subs_name);
+  handlePayment:function(subamt){//helper function to handle pay()
+    var accessinstance;
+    var amount=subamt*1000000000000000000;
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then(function (instance) {
       accessinstance=instance;
-      return accessinstance.pay(str32name, {from: account}); // added from parameter
+      return accessinstance.pay(amount, {from: account}); // added from parameter
     }).then(function (result) {
       if(result){
-        if(parseInt(result.receipt.status) == 1)
-        alert(account + " payment done successfully")
-        else
-        alert(account + " payment not done successfully due to revert")
-     } else {
-        alert(account + " payment failed")
-     }  
-     });
-   });
-  },
-
-  handleAccess:function(subs_name){// does not work
-    var str32name;
-    var accessinstance;
-    str32name=ethers.utils.formatBytes32String(subs_name);
-    web3.eth.getAccounts( function(error, accounts){
-      var account = accounts[0];
-      App.contracts.Cryptofans.deployed().then(function (instance) {
-      accessinstance=instance;
-      return accessinstance.accessSubscription(str32name,  {from: account}); // added from parameter
-      }).then(function (result) {
-        if(result){
-          console.log("accessed subscription");
-          if(parseInt(result.receipt.status) == 1)
-          alert(account + " accessing done successfully")
-          else
-          alert(account + " access not done successfully due to revert")
+         if(parseInt(result.receipt.status) == 1)
+         alert(account + " pay done successfully")
+         else
+         alert(account + " pay not done successfully due to revert")
       } else {
-          alert(account + " access failed")
+         alert(account + " pay failed")
       }  
       });
     });
+  },
+
+  handleAccess:function(subs_name){// does not work
+  
   },
 
   handleCreate:function(str1, amnt, prd, desc){// create seems to be working
@@ -319,26 +309,8 @@ App = {
   },
 
   handleTransfer:function(addr, amount){// transfer is a payment // not working
-    // function invoked after claiming payments
-    var weiamount=amount*App.value;
-    web3.eth.getAccounts( function(error, accounts){
-      var account = accounts[0];
-      App.contracts.Cryptofans.deployed().then(function (instance) {
-      accessinstance=instance;
-      return accessinstance.collect(addr, weiamount,  {from: account}); // added from parameter
-      }).then(function (result) {
-        if(result){
-          console.log("ethereum transferred to" + addr + "metamask address");
-          if(parseInt(result.receipt.status) == 1)
-          alert(" eth transferred successfully from " + account + "to" +addr) 
-          else
-          alert(account + " eth transfer not done successfully due to revert")
-      } else {
-          alert(account + " eth transfer failed")
-      }  
-      });
-    }); 
-},
+    
+  },
 
 abi:[
 	{

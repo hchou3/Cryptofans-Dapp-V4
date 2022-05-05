@@ -111,6 +111,9 @@ contract Cryptofans{
 
     //warn subscribers they are about to purchase subscription(proposal)
     function pay(bytes32 prop_h) public payable onlySubscriber{
+    //function pay(uint256 amt) public payable onlySubscriber{
+        //address payable payable_creator=payable(0x475b728384fbb55f4231ccAfc9c8C2f7CF228e52);
+        //payable_creator.transfer(amt);
         if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
             revert("Payment up to date.");
         }else{ 
@@ -128,7 +131,7 @@ contract Cryptofans{
         (newowner).transfer(amount);
        }
     }
-
+    
     function sub_to_plan(bytes32 prop_h) public payable onlySubscriber{
         if(proposals[prop_h].name_taken == false){
             revert("there is no subscription of this name");
@@ -217,5 +220,5 @@ contract Cryptofans{
         }
         
     }
-
+    
 }
