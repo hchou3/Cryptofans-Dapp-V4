@@ -144,8 +144,6 @@ contract Cryptofans{
         info_by_prop[msg.sender][prop_h].in_use = true;
         pay(prop_h);
         sub_ids[proposals[prop_h].creator][proposals[prop_h].key].push(subscribers[msg.sender].addy);
-        //dependent of view subs functon
-        //^^^Increment both keys and provider counts when supporting multiple proposals
     }
    
     // address 1 = bytes32"netflix" with key 0, "youtube" w key 1

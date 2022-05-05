@@ -45,7 +45,7 @@ App = {
    });
      $(document).on('click', '#sub_plan', function(){
       App.populateAddress().then(r => App.handler = r[0]);
-      App.handleSub(jQuery('#sub_namesub1').val(),1);
+      App.handleSub(jQuery('#sub_namesub1').val());
    });
      $(document).on('click', '#sub_access', function(){
       App.populateAddress().then(r => App.handler = r[0]);
@@ -75,7 +75,7 @@ App = {
    });
      $(document).on('click', '#prov_collect', function(){
       App.populateAddress().then(r => App.handler = r[0]);
-      App.handleTransfer(jQuery('#eth_coll_add').val(),jQuery('#eth_amount').val());
+      App.handleTransfer(jQuery('#eth_coll_add').val(), jQuery('#eth_amount').val());
    });
    },
 
@@ -84,7 +84,7 @@ App = {
       return await ethereum.request({method : 'eth_requestAccounts'});
   },  
   
-  handleSubReg: function(){
+  handleSubReg: function(){//works
     var cfans_instance;
     web3.eth.getAccounts( function(error, accounts){
     var account = accounts[0];
@@ -105,7 +105,7 @@ App = {
     });
   },
 
-  handleProvReg:function(){
+  handleProvReg:function(){//works
     var cfans_instance;
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
@@ -126,7 +126,7 @@ App = {
     });
   },
 
-  handleFind:function(SubscriptionName){
+  handleFind:function(SubscriptionName){// needs to display information
     var cfans_instance;
     var subnameto32=ethers.utils.formatBytes32String(SubscriptionName);
     web3.eth.getAccounts( function(error, accounts){
@@ -148,7 +148,7 @@ App = {
     });
   },
 
-  handleUnsub:function(subs_name){
+  handleUnsub:function(subs_name){// subscribe needs to work first
     var str32name;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
@@ -170,18 +170,16 @@ App = {
       });
     });
   },
-  //0x6e6574666c697800000000000000000000000000000000000000000000000000
-  handleSub:function(subs_name, amount){//params:proposal name   o/inputs: eth amount, account to send to
+  // handleSub not working
+  handleSub:function(subs_name){//params:proposal name   o/inputs: eth amount, account to send to
     var str32name;
-    var weiamount= App.value*amount;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then(function (instance) {
       accessinstance=instance;
-      console.log(str32name);
-      return accessinstance.sub_to_plan(str32name, {from: weiamount}, {from: account}); // added from parameter
+      return accessinstance.sub_to_plan(str32name, {from: account}); // added from parameter
     }).then(function (result) {
       if(result){
          if(parseInt(result.receipt.status) == 1)
@@ -195,7 +193,27 @@ App = {
     });
   },
 
-  handleAccess:function(subs_name){
+  handlePayment:function(subs_name){//helper function to handle pay()
+    var str32name= ethers.utils.formatBytes32String(subs_name);
+    web3.eth.getAccounts( function(error, accounts){
+      var account = accounts[0];
+      App.contracts.Cryptofans.deployed().then(function (instance) {
+      accessinstance=instance;
+      return accessinstance.pay(str32name, {from: account}); // added from parameter
+    }).then(function (result) {
+      if(result){
+        if(parseInt(result.receipt.status) == 1)
+        alert(account + " payment done successfully")
+        else
+        alert(account + " payment not done successfully due to revert")
+     } else {
+        alert(account + " payment failed")
+     }  
+     });
+   });
+  },
+
+  handleAccess:function(subs_name){// does not work
     var str32name;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
@@ -218,7 +236,7 @@ App = {
     });
   },
 
-  handleCreate:function(str1, amnt, prd, desc){
+  handleCreate:function(str1, amnt, prd, desc){// create seems to be working
     var str32name;
     var weitoEth;
     var periodsecs;
@@ -243,7 +261,6 @@ App = {
       if(result){
         console.log("proposal created");
         console.log(result.receipt);
-        console.log(result.receipt.status);
         if(parseInt(result.receipt.status) == 1)
         alert(account + " proposal created successfully")
         else
@@ -255,7 +272,7 @@ App = {
     });
   },
   
-  handleToggle:function(props_name){
+  handleToggle:function(props_name){//toggle seems to be working
     var str32name;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(props_name);
@@ -278,7 +295,7 @@ App = {
     });
   },
 
-  handleView:function(props_name){
+  handleView:function(props_name){// view needs to display subscriber list
     var str32name;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(props_name);
@@ -289,7 +306,6 @@ App = {
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log(result);
           console.log("view done");
           if(parseInt(result.receipt.status)== 1)
           alert(account + " voting done successfully")
@@ -302,11 +318,9 @@ App = {
     });
   },
 
-  handleTransfer:function(addr, amount){
+  handleTransfer:function(addr, amount){// transfer is a payment // not working
     // function invoked after claiming payments
-    //toHex conversion to support big numbers
-    var weiamount=App.web3.utils.toWei(amount,'ether');
-    var amount=App.web3.utils.toHex(weiamount);
+    var weiamount=amount*App.value;
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then(function (instance) {
@@ -314,9 +328,9 @@ App = {
       return accessinstance.collect(addr, weiamount,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log("ethereum transferred to" + account + "metamask address");
+          console.log("ethereum transferred to" + addr + "metamask address");
           if(parseInt(result.receipt.status) == 1)
-          alert(account + " eth transferred successfully")
+          alert(" eth transferred successfully from " + account + "to" +addr) 
           else
           alert(account + " eth transfer not done successfully due to revert")
       } else {
