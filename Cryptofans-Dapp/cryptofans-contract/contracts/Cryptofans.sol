@@ -1,37 +1,28 @@
 // SPDX-License-Identifier: hasanhenry426
-
 pragma solidity >=0.6.0 <0.9.0;
 
-contract Cryptofans{
+import "./helper_contracts/ERC20.sol";
 
-
+contract Cryptofans is ERC20{
+    //subscription periods
     uint constant MONTH= 2628000;
     uint constant YEAR_IN_SECONDS = 31536000;
-    
-
+    //structs
     struct Subscriber {
         address addy;// sub address
         bool registered;
         uint256 start;
     }
-
-    mapping(address => Subscriber) subscribers;//subscriber's address to each individual Sub struct
-    mapping(bytes32=>Proposal) proposals;//All existing proposals= key:name val:proposal struct  
-    mapping(address => Provider) providers;//providers' addresses to an individual provider struct  
-    mapping(address=>mapping(uint=>address[])) sub_ids;//provider's address to key to list of subscribers
-    mapping(address=>mapping(bytes32=>subPlan)) info_by_prop;//Subs' address mapped to a proposal name mapped to a subscribers' plan 
     struct Provider{
         address add;
         bool registered; 
         uint numproposal;
     }
-
     struct subPlan{
         bool in_use;
         uint256 next_payday;
         uint256 start_payday;
     }
-    
     struct Proposal { 
         bytes32 name;   //(?) short name (up to 32 bytes) X 
         uint cost;
@@ -42,46 +33,50 @@ contract Cryptofans{
         uint key;//-> act like a hash 
         address creator; 
     }
-    //0xC5Bdf71E29E4E4e3dEA87568CBd8503A2418f958
+    //data 
+    mapping(address => Subscriber) subscribers;//subscriber's address to each individual Sub struct
+    mapping(bytes32=>Proposal) proposals;//All existing proposals= key:name val:proposal struct  
+    mapping(address => Provider) providers;//providers' addresses to an individual provider struct  
+    mapping(address=>mapping(uint=>address[])) sub_ids;//provider's address to key to list of subscribers
+    mapping(address=>mapping(bytes32=>subPlan)) info_by_prop;//Subs' address mapped to a proposal name mapped to a subscribers' plan 
+    ////ERC20 INTITIALIZE
+    address public user;
+    constructor() public{
+        user = msg.sender;
+    }
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+
+    //////CRYPTOFANS FUNCTIONS//////
     function registerasSubscriber () public {
         // if statement to check if they already registered
         // nested mapping goes here??
         if (subscribers[msg.sender].registered == true){
-
             revert("You are already registered");
-
             // change revert function to whatever necessary if it doesnt work
         }
         else{
             subscribers[msg.sender].registered = true;
             subscribers[msg.sender].addy = msg.sender;
         }
-
     }
     
     function registerasProvider () public {
         // if statement to check if ti exists
         if (providers[msg.sender].registered == true){
-
             revert("You are already registered");
-
             // change revert function to whatever necessary if it doesnt work
         }else {
             providers[msg.sender].registered = true;
             providers[msg.sender].add = msg.sender;
         }
-
-
-
     }
 
-    modifier onlyProvider(){ //modifier provider
+    modifier onlyProvider(){ //modifier for provider
         require(providers[msg.sender].registered == true) ;
         _;
     }
-
-    // Modifier subascriber
-    modifier onlySubscriber(){
+    modifier onlySubscriber(){// Modifier for subscriber
         require(subscribers[msg.sender].registered == true) ;
         _;
     }
@@ -92,16 +87,13 @@ contract Cryptofans{
             revert("not a valid address");
         }
         if (proposals[name].name_taken == true){
-            
             revert("A subscription plan with this name already exists, use another name");
         }
         if ((period != MONTH && period != YEAR_IN_SECONDS) ){
-         
             revert("Must be monthly or yearly");
         }
         uint key_num = 0; // index 0 proposal 1
         if (providers[msg.sender].numproposal >= 1){ // if greater than 1 proposal
-
             key_num = providers[msg.sender].numproposal; // index of latest proposal
         }
         providers[msg.sender].numproposal = providers[msg.sender].numproposal + 1; // proposal count begins at 1
@@ -109,11 +101,8 @@ contract Cryptofans{
         proposals[name].active = true ; // turns on activity 
     }
 
-    //warn subscribers they are about to purchase subscription(proposal)
+    //################//warn subscribers they are about to purchase subscription(proposal)
     function pay(bytes32 prop_h) public payable onlySubscriber{
-    //function pay(uint256 amt) public payable onlySubscriber{
-        //address payable payable_creator=payable(0x475b728384fbb55f4231ccAfc9c8C2f7CF228e52);
-        //payable_creator.transfer(amt);
         if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
             revert("Payment up to date.");
         }else{ 
@@ -122,7 +111,7 @@ contract Cryptofans{
             info_by_prop[msg.sender][prop_h].next_payday= info_by_prop[msg.sender][prop_h].next_payday+ proposals[prop_h].period;
         }
     }
-    
+    //##################
     function collect(address newholder, uint256 amount) public payable onlyProvider{
        if(msg.sender.balance<1){
             revert("Your balance is not large enough to transfer.");
@@ -131,7 +120,7 @@ contract Cryptofans{
         (newowner).transfer(amount);
        }
     }
-    
+    //####################
     function sub_to_plan(bytes32 prop_h) public payable onlySubscriber{
         if(proposals[prop_h].name_taken == false){
             revert("there is no subscription of this name");
@@ -202,6 +191,7 @@ contract Cryptofans{
         
     }
 
+    //###################
     function accessSubscscription(bytes32 prop_h) public payable onlySubscriber returns(bool){
         if(info_by_prop[msg.sender][prop_h].in_use == false){
             return false;
@@ -217,8 +207,7 @@ contract Cryptofans{
         }
         else{
             return false;
-        }
-        
+        }   
     }
     
 }
