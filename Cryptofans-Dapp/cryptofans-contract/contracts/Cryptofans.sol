@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: hasanhenry426
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity >=0.6.0 <=0.9.0;
 
 import "./helper_contracts/ERC20.sol";
 
-contract Cryptofans is ERC20{
+contract Cryptofans is ERC20Basic{
     //subscription periods
     uint constant MONTH= 2628000;
     uint constant YEAR_IN_SECONDS = 31536000;
@@ -40,13 +40,16 @@ contract Cryptofans is ERC20{
     mapping(address=>mapping(uint=>address[])) sub_ids;//provider's address to key to list of subscribers
     mapping(address=>mapping(bytes32=>subPlan)) info_by_prop;//Subs' address mapped to a proposal name mapped to a subscribers' plan 
     ////ERC20 INTITIALIZE
-    address public user;
-    constructor() public{
-        user = msg.sender;
+    address public user;//deployers address
+    uint public _totalSupply;
+    
+    constructor()public{
+        user=msg.sender;
     }
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 
+    function totalSupply() public override view returns (uint256) {
+        return totalSupply_;
+    }
     //////CRYPTOFANS FUNCTIONS//////
     function registerasSubscriber () public {
         // if statement to check if they already registered

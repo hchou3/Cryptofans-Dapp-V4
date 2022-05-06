@@ -17,7 +17,7 @@ contract ERC20Basic is IERC20 {
     uint256 totalSupply_ = 10 ether;
 
 
-   constructor() {
+    constructor() public{
     balances[msg.sender] = totalSupply_;
     }
 
