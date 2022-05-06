@@ -264,7 +264,7 @@ App = {
   },
 
   handleView:function(props_name){// viewsubs working
-    $('#subs_display').text("Please enter a subscription you own. ");
+    $('#subs_display').text("Please enter a subscription you own.");
     $('#subs_listing').text("");
     var str32name;
     var accessinstance;
