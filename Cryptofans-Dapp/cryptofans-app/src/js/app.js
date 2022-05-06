@@ -36,49 +36,49 @@ App = {
    
    bindEvents: function() {  
      //subs.html + subs_func.html
-     $(document).on('click', '#sub_reg', function(){
+     $(document).on('click', '#sub_reg', function(){// working
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleSubReg();
    });
-     $(document).on('click', '#sub_find', function(){
+     $(document).on('click', '#sub_find', function(){// working
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleFind(jQuery('#sub_namesub').val());
    });
-     $(document).on('click', '#sub_plan', function(){
+     $(document).on('click', '#sub_plan', function(){// NEEDS IMPLEMENTATION
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleSub(jQuery('#sub_namesub1').val());
    });
-     $(document).on('click', '#sub_access', function(){
+     $(document).on('click', '#sub_access', function(){// NEEDS IMPLEMENTATION
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleAccess(jQuery('#sub_namesub2').val());
    });
-     $(document).on('click', '#unsub_plan', function(){
+     $(document).on('click', '#unsub_plan', function(){//working when sub_plan works
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleUnsub(jQuery('#sub_namesub3').val());
    });
 
      //prov.html + prov_func.html
-     $(document).on('click', '#prov_reg', function(){
+     $(document).on('click', '#prov_reg', function(){//working
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleProvReg();
    });
-     $(document).on('click', '#prov_create', function(){
+     $(document).on('click', '#prov_create', function(){//working
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleCreate(jQuery('#create_name').val(),jQuery('#create_cost').val(),jQuery('#create_period').val(),jQuery('#create_desc').val());
    });
-     $(document).on('click', '#prov_onoff', function(){
+     $(document).on('click', '#prov_onoff', function(){//working
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleToggle(jQuery('#sub_toggle').val());
    });
-     $(document).on('click', '#prov_view', function(){
+     $(document).on('click', '#prov_view', function(){//working
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleView(jQuery('#sub_toview').val());
    });
-     $(document).on('click', '#prov_collect', function(){
+     $(document).on('click', '#prov_collect', function(){//NEEDS IMPLEMENTATION
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleTransfer(jQuery('#eth_coll_add').val(), jQuery('#eth_amount').val());
    });
-      $(document).on('click', '#dopay', function(){
+      $(document).on('click', '#dopay', function(){//fortesting
       App.populateAddress().then(r => App.handler = r[0]);
       App.handlePayment(jQuery('#payamt').val());
  });
@@ -132,7 +132,7 @@ App = {
     });
   },
 
-  handleFind:function(SubscriptionName){// needs to display information
+  handleFind:function(SubscriptionName){//find works
     $('#search_title').text("Subscription does not exist");
     $('#search_cost').text(" ");
     $('#search_period').text(" ");
@@ -174,7 +174,7 @@ App = {
     });
   },
 
-  handleUnsub:function(subs_name){// subscribe needs to work first
+  handleUnsub:function(subs_name){// subscribe needs to work first otherwise it works
     var str32name;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(subs_name);
@@ -204,7 +204,7 @@ App = {
   
   },
 
-  handleCreate:function(str1, amnt, prd, desc){// create seems to be working
+  handleCreate:function(str1, amnt, prd, desc){// create is working
     var str32name;
     var weitoEth;
     var periodsecs;
@@ -239,7 +239,7 @@ App = {
     });
   },
   
-  handleToggle:function(props_name){//toggle seems to be working
+  handleToggle:function(props_name){//toggle is working
     var str32name;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(props_name);
@@ -250,6 +250,7 @@ App = {
       return accessinstance.on_off_switch(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
+          console.log(result);
           console.log("proposal toggled");
           if(parseInt(result.receipt.status) == 1)
           alert(account + " toggling done successfully")
@@ -262,7 +263,9 @@ App = {
     });
   },
 
-  handleView:function(props_name){// view needs to display subscriber list
+  handleView:function(props_name){// viewsubs working
+    $('#subs_display').text("Please enter a subscription you own. ");
+    $('#subs_listing').text("");
     var str32name;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(props_name);
@@ -272,16 +275,19 @@ App = {
       accessinstance=instance;
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
-        console.log(result);
-        var box='<div class="check col-md-6 col-lg-12" style="position:absolute;margin-top:10px;z-index:0 ;left:15px">'+
-                    '<span class="amount"></span>'+
-                    '<p class="sub">'+result[0]+'</p>'+
-                    '</div>';
-        jQuery('#subs_display').append(box); 
         if(result){
+          if(result.length==0){
+            $('#subs_display').text("No subscribers yet!");
+            $('#subs_listing').text(" ");
+          }else{
+            $('#subs_display').text("Current Subscribers:" +result.length);
+            for (let i = 0; i < result.length; i++) {
+              jQuery('#subs_listing').append(result[i] +'<br/>'); 
+            }
+          }
           console.log("view done");
         } else {
-          alert(account + " voting failed")
+          alert("view subs failed")
         }  
         });
     });
