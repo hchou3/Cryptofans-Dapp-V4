@@ -39,17 +39,15 @@ contract Cryptofans is ERC20Basic{
     mapping(address => Provider) providers;//providers' addresses to an individual provider struct  
     mapping(address=>mapping(uint=>address[])) sub_ids;//provider's address to key to list of subscribers
     mapping(address=>mapping(bytes32=>subPlan)) info_by_prop;//Subs' address mapped to a proposal name mapped to a subscribers' plan 
+    
     ////ERC20 INTITIALIZE
     address public user;//deployers address
     uint public _totalSupply;
-    
-    constructor()public{
+
+    constructor() public{
         user=msg.sender;
     }
-
-    function totalSupply() public override view returns (uint256) {
-        return totalSupply_;
-    }
+    ////ERC20 FUNCTIONS
     //////CRYPTOFANS FUNCTIONS//////
     function registerasSubscriber () public {
         // if statement to check if they already registered
@@ -104,7 +102,7 @@ contract Cryptofans is ERC20Basic{
         proposals[name].active = true ; // turns on activity 
     }
 
-    //################//warn subscribers they are about to purchase subscription(proposal)
+    //################
     function pay(bytes32 prop_h) public payable onlySubscriber{
         if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
             revert("Payment up to date.");
