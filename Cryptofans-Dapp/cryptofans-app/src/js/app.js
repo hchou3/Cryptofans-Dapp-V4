@@ -133,6 +133,10 @@ App = {
   },
 
   handleFind:function(SubscriptionName){// needs to display information
+    $('#search_title').text("Subscription does not exist");
+    $('#search_cost').text(" ");
+    $('#search_period').text(" ");
+    $('#search_info').text(" ");
     var cfans_instance;
     var subnameto32=ethers.utils.formatBytes32String(SubscriptionName);
     web3.eth.getAccounts( function(error, accounts){
@@ -142,13 +146,29 @@ App = {
         return cfans_instance.findSubscription(subnameto32, {from: account});
       }).then(function(result, err){
             if(result){
-                console.log("Subcripton name found");
-                if(parseInt(result.receipt.status) == 1)
-                alert(account + " name found successfully")
-                else
-                alert(account + " name search not done successfully due to revert")
+              var title=ethers.utils.parseBytes32String(result[0]);
+              var cost=parseInt(result[1])/1000000000000000000;
+              var period=Math.floor(parseInt(result[2])/86400);
+              var time;
+              if(period==30){
+                time='Monthly (30-day)';
+              }
+             if(period==365){
+                time='Annual (365-day)';
+              }
+              var desc=result[3];
+              console.log(title+" "+cost+" "+period+" "+desc);
+              var title='Title: '+title;
+              var cost='Cost: '+cost;
+              var period='Subcription Period: '+period;
+              var desc= 'About: '+desc;
+              $('#search_title').text(title);
+              $('#search_cost').text(cost);
+              $('#search_period').text(period);
+              $('#search_info').text(desc);
+              console.log("Subcripton name found");
             }else {
-                alert(account + " name searching failed")
+              alert("name searching failed")
             }   
         });
     });
@@ -178,49 +198,8 @@ App = {
   },
   // handleSub not working
   handleSub:function(subs_name){//params:proposal name   o/inputs: eth amount, account to send to
-    var str32name;
-    var accessinstance;
-    str32name=ethers.utils.formatBytes32String(subs_name);
-    web3.eth.getAccounts( function(error, accounts){
-      var account = accounts[0];
-      App.contracts.Cryptofans.deployed().then(function (instance) {
-      accessinstance=instance;
-      return accessinstance.sub_to_plan(str32name, {from: account}); // added from parameter
-    }).then(function (result) {
-      if(result){
-         if(parseInt(result.receipt.status) == 1)
-         alert(account + " sub done successfully")
-         else
-         alert(account + " sub not done successfully due to revert")
-      } else {
-         alert(account + " sub failed")
-      }  
-      });
-    });
+    
   },
-  
-
-  handlePayment:function(subamt){//helper function to handle pay()
-    var accessinstance;
-    var amount=subamt*1000000000000000000;
-    web3.eth.getAccounts( function(error, accounts){
-      var account = accounts[0];
-      App.contracts.Cryptofans.deployed().then(function (instance) {
-      accessinstance=instance;
-      return accessinstance.pay(amount, {from: account}); // added from parameter
-    }).then(function (result) {
-      if(result){
-         if(parseInt(result.receipt.status) == 1)
-         alert(account + " pay done successfully")
-         else
-         alert(account + " pay not done successfully due to revert")
-      } else {
-         alert(account + " pay failed")
-      }  
-      });
-    });
-  },
-
   handleAccess:function(subs_name){// does not work
   
   },
@@ -249,7 +228,6 @@ App = {
     }).then(function (result) {
       if(result){
         console.log("proposal created");
-        console.log(result.receipt);
         if(parseInt(result.receipt.status) == 1)
         alert(account + " proposal created successfully")
         else
@@ -294,13 +272,14 @@ App = {
       accessinstance=instance;
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
+        console.log(result);
+        var box='<div class="check col-md-6 col-lg-12" style="position:absolute;margin-top:10px;z-index:0 ;left:15px">'+
+                    '<span class="amount"></span>'+
+                    '<p class="sub">'+result[0]+'</p>'+
+                    '</div>';
+        jQuery('#subs_display').append(box); 
         if(result){
-          console.log(result.val);
           console.log("view done");
-          if(parseInt(result.receipt.status)== 1)
-          alert(account + " voting done successfully")
-          else
-          alert(account + " voting not done successfully due to revert")
         } else {
           alert(account + " voting failed")
         }  

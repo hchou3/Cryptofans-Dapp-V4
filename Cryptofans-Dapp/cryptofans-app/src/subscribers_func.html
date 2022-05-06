@@ -68,11 +68,32 @@
                     <label for="sub_namesub">Subscription Name</label>
                     <input type="text" class="form-control" id="sub_namesub" placeholder="Enter A Subscription Name" required></input>
                     <br>
-                    <button type="button" class="btn btn-primary" id="sub_find">Search</button>
+                    <button type="button" class="btn btn-primary" id="sub_find" data-toggle="modal" data-target="#search_window">Search</button>
                 </div>   
             </div>
         </div>
         <div class="row" style="padding-top:10px"></div>
+        <div id="search_window" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Subscription</h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div id="search_title">Subscription does not exist</div>
+                    <div id="search_cost"></div>
+                    <div id="search_period"></div>
+                    <div id="search_info"></div>
+                    <div class="modal-body">
+                        <div class="row" style="padding-top:250px"></div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+              
+                </div>
+        </div>
     </span>
     </body>
 
