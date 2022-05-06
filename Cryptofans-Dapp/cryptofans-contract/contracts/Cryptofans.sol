@@ -41,14 +41,28 @@ contract Cryptofans is ERC20Basic{
     mapping(address=>mapping(bytes32=>subPlan)) info_by_prop;//Subs' address mapped to a proposal name mapped to a subscribers' plan 
     
     ////ERC20 INTITIALIZE
-    address public user;//deployers address
+    address public user;                //deployers address
     uint public _totalSupply;
 
     constructor() public{
         user=msg.sender;
     }
     ////ERC20 FUNCTIONS
-    //////CRYPTOFANS FUNCTIONS//////
+    //re-define:
+    //function transfer(address receiver, uint256 numTokens) public override returns (bool) {}
+    //function balanceOf(address tokenOwner) public override view returns (uint256) {}
+    //function approve(address delegate, uint256 numTokens) public override returns (bool) {}
+    //function totalSupply() external view returns (uint256){}
+    //function transferFrom(address sender, address recipient, uint256 amount) external returns (bool){}
+
+    //currently unused:
+    //function allowance(address owner, address spender) external view returns (uint256);
+
+    //events(implement):
+    //event Transfer(address indexed from, address indexed to, uint256 value);
+    //event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    //////CRYPTOFANS MARKETPLACE FUNCTIONS//////
     function registerasSubscriber () public {
         // if statement to check if they already registered
         // nested mapping goes here??
