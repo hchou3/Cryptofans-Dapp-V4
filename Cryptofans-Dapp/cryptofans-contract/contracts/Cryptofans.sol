@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: hasanhenry426
 pragma solidity >=0.6.0 <=0.9.0;
 
-import './IERC20.sol';
+import './helper_contracts/IERC20.sol';
 
 contract Cryptofans is IERC20 {
     //subscription periods
