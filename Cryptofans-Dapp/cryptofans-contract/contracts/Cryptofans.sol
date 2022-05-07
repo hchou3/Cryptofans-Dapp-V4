@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: hasanhenry426
 pragma solidity >=0.6.0 <=0.9.0;
 
-import "./helper_contracts/ERC20.sol";
+import './IERC20.sol';
 
-contract Cryptofans is ERC20Basic{
+contract Cryptofans is IERC20 {
     //subscription periods
     uint constant MONTH= 2628000;
     uint constant YEAR_IN_SECONDS = 31536000;
@@ -24,7 +24,7 @@ contract Cryptofans is ERC20Basic{
         uint256 start_payday;
     }
     struct Proposal { 
-        bytes32 name;   //(?) short name (up to 32 bytes) X 
+        bytes32 cname;   //(?) short name (up to 32 bytes) X 
         uint cost;
         uint256 period;// (   billed cycle in days )
         bool active; // active or not
@@ -41,12 +41,76 @@ contract Cryptofans is ERC20Basic{
     mapping(address=>mapping(bytes32=>subPlan)) info_by_prop;//Subs' address mapped to a proposal name mapped to a subscribers' plan 
     
     ////ERC20 INTITIALIZE
-    address public user;                //deployers address
-    uint public _totalSupply;
+    string public constant name = "SubCoin";
+    string public constant symbol = "SBC";
+    uint8 public constant decimals = 18;
 
-    constructor() public{
-        user=msg.sender;
+
+    mapping(address => uint256) balances;
+
+    mapping(address => mapping (address => uint256)) allowed;
+
+    uint256 totalSupply_ = 10 ether;
+
+    uint256 ptotalSupply_ = 1 ether;
+
+
+   
+
+    function totalSupply() public override view returns (uint256) {
+    return totalSupply_;
     }
+
+
+    function getcoins() private{
+    balances[msg.sender] = totalSupply_;
+    }
+
+     function getcoinsprov() private{
+    balances[msg.sender] = ptotalSupply_;
+    }
+
+    function balanceOf(address tokenOwner) public override view returns (uint256) {
+        return balances[tokenOwner];
+    }
+
+    function checkbalancef() public view returns (uint256) {
+        return balances[msg.sender];
+    }
+
+    
+
+    function transfer(address receiver, uint256 numTokens) public override returns (bool) {
+        require(numTokens <= balances[msg.sender]);
+        balances[msg.sender] = balances[msg.sender]-numTokens;
+        balances[receiver] = balances[receiver]+numTokens;
+        emit Transfer(msg.sender, receiver, numTokens);
+        return true;
+    }
+
+    function approve(address delegate, uint256 numTokens) public override returns (bool) {
+        allowed[msg.sender][delegate] = numTokens;
+        emit Approval(msg.sender, delegate, numTokens);
+        return true;
+    }
+
+    function allowance(address owner, address delegate) public override view returns (uint) {
+        return allowed[owner][delegate];
+    }
+
+    function transferFrom(address owner, address buyer, uint256 numTokens) public override returns (bool) {
+        require(numTokens <= balances[owner]);
+        require(numTokens <= allowed[owner][msg.sender]);
+
+        balances[owner] = balances[owner]-numTokens;
+        allowed[owner][msg.sender] = allowed[owner][msg.sender]-numTokens;
+        balances[buyer] = balances[buyer]+numTokens;
+        emit Transfer(owner, buyer, numTokens);
+        return true;
+    }
+
+
+    
     ////ERC20 FUNCTIONS
     //re-define:
     //function transfer(address receiver, uint256 numTokens) public override returns (bool) {}
@@ -64,6 +128,8 @@ contract Cryptofans is ERC20Basic{
 
     //////CRYPTOFANS MARKETPLACE FUNCTIONS//////
     function registerasSubscriber () public {
+     
+        getcoins();
         // if statement to check if they already registered
         // nested mapping goes here??
         if (subscribers[msg.sender].registered == true){
@@ -75,8 +141,12 @@ contract Cryptofans is ERC20Basic{
             subscribers[msg.sender].addy = msg.sender;
         }
     }
+   
     
     function registerasProvider () public {
+
+       getcoinsprov();
+       
         // if statement to check if ti exists
         if (providers[msg.sender].registered == true){
             revert("You are already registered");
@@ -88,6 +158,7 @@ contract Cryptofans is ERC20Basic{
     }
 
     modifier onlyProvider(){ //modifier for provider
+
         require(providers[msg.sender].registered == true) ;
         _;
     }
@@ -96,12 +167,12 @@ contract Cryptofans is ERC20Basic{
         _;
     }
     
-    function createSubscription(bytes32 name, uint cost, uint period, string memory description) onlyProvider public {
+    function createSubscription(bytes32 cname, uint cost, uint period, string memory description) onlyProvider public {
         //  if statement to check that proposal by this mname does not exist
-        if(name==0x0000000000000000000000000000000000000000000000000000000000000000 || name==0x0){
+        if(cname==0x0000000000000000000000000000000000000000000000000000000000000000 || cname==0x0){
             revert("not a valid address");
         }
-        if (proposals[name].name_taken == true){
+        if (proposals[cname].name_taken == true){
             revert("A subscription plan with this name already exists, use another name");
         }
         if ((period != MONTH && period != YEAR_IN_SECONDS) ){
@@ -112,8 +183,8 @@ contract Cryptofans is ERC20Basic{
             key_num = providers[msg.sender].numproposal; // index of latest proposal
         }
         providers[msg.sender].numproposal = providers[msg.sender].numproposal + 1; // proposal count begins at 1
-        proposals[name] = Proposal(name, cost, period, true, true, description, key_num, msg.sender); // registers proposal
-        proposals[name].active = true ; // turns on activity 
+        proposals[cname] = Proposal(cname, cost, period, true, true, description, key_num, msg.sender); // registers proposal
+        proposals[cname].active = true ; // turns on activity 
     }
 
     //################
@@ -183,7 +254,7 @@ contract Cryptofans is ERC20Basic{
 
     function findSubscription (bytes32 searchName) public view returns (bytes32,uint, uint,string memory) {
         if (proposals[searchName].active == true){
-            return (proposals[searchName].name,proposals[searchName].cost,proposals[searchName].period, proposals[searchName].description) ;
+            return (proposals[searchName].cname,proposals[searchName].cost,proposals[searchName].period, proposals[searchName].description) ;
         }
         else{
             revert("Subscription by that name does not exist") ; 
