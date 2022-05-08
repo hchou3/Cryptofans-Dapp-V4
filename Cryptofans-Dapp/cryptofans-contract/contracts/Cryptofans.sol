@@ -23,8 +23,8 @@ contract Cryptofans is IERC20 {
         uint256 next_payday;
         uint256 start_payday;
     }
-    struct Proposal { 
-        bytes32 cname;   //(?) short name (up to 32 bytes) X 
+    struct Proposal { // 
+        bytes32 cname;   //(?) short name (up to 32 bytes) X 1000000000000000000
         uint cost;
         uint256 period;// (   billed cycle in days )
         bool active; // active or not
@@ -88,6 +88,7 @@ contract Cryptofans is IERC20 {
     }
 
     
+    
 
     function transfer(address receiver, uint256 numTokens) public override returns (bool) {
         require(numTokens <= balances[msg.sender]);
@@ -118,8 +119,34 @@ contract Cryptofans is IERC20 {
         return true;
     }
 
+    function transfersub(address receiver, uint256 numTokens, bytes32 prop_h) public returns (bool) {
 
-    
+
+
+
+         if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
+            revert("Payment up to date.");
+        }else{ 
+
+           if(transfer(receiver, numTokens) ){
+
+           
+            info_by_prop[msg.sender][prop_h].next_payday= info_by_prop[msg.sender][prop_h].next_payday+ proposals[prop_h].period;
+           
+            
+            return true;
+           }
+           else{
+
+               return false;
+           }
+        }
+
+       
+        
+    }
+
+   
     ////ERC20 FUNCTIONS
     //re-define:
     //function transfer(address receiver, uint256 numTokens) public override returns (bool) {}
@@ -193,23 +220,28 @@ contract Cryptofans is IERC20 {
     }
 
     //################
-    function pay(bytes32 prop_h) public payable onlySubscriber{
-        if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
-            revert("Payment up to date.");
-        }else{ 
-            address payable payable_creator=payable(proposals[prop_h].creator);
-            payable_creator.transfer(proposals[prop_h].cost);
-            info_by_prop[msg.sender][prop_h].next_payday= info_by_prop[msg.sender][prop_h].next_payday+ proposals[prop_h].period;
-        }
-    }
+    // NOT USED IN PHASE3
+
+    // function pay(bytes32 prop_h) public payable onlySubscriber{
+    //     if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
+    //         revert("Payment up to date.");
+    //     }else{ 
+    //         address payable payable_creator=payable(proposals[prop_h].creator);
+    //         payable_creator.transfer(proposals[prop_h].cost);
+    //         info_by_prop[msg.sender][prop_h].next_payday= info_by_prop[msg.sender][prop_h].next_payday+ proposals[prop_h].period;
+    //     }
+    // }
     //##################
-    function collect(address newholder, uint256 amount) public payable onlyProvider{
-       if(msg.sender.balance<1){
-            revert("Your balance is not large enough to transfer.");
-       }else{
-           transfer(newholder, amount);
-       }
-    }
+
+
+    // NOT USED IN PHASE 3
+    // function collect(address newholder, uint256 amount) public payable onlyProvider{
+    //    if(msg.sender.balance<1){
+    //         revert("Your balance is not large enough to transfer.");
+    //    }else{
+    //        transfer(newholder, amount);
+    //    }
+    // }
     //####################
     function sub_to_plan(bytes32 prop_h) public payable onlySubscriber{
         if(proposals[prop_h].name_taken == false){
@@ -224,7 +256,7 @@ contract Cryptofans is IERC20 {
         info_by_prop[msg.sender][prop_h]=subPlan(true, block.timestamp, block.timestamp);
         info_by_prop[msg.sender][prop_h].next_payday = block.timestamp;
         info_by_prop[msg.sender][prop_h].in_use = true;
-        transfer(proposals[prop_h].creator, proposals[prop_h].cost);// ERC20 transfer()
+        transfersub(proposals[prop_h].creator, proposals[prop_h].cost, prop_h);// ERC20 transfer()
         sub_ids[proposals[prop_h].creator][proposals[prop_h].key].push(subscribers[msg.sender].addy);
     }
    
@@ -291,7 +323,7 @@ contract Cryptofans is IERC20 {
         }
         if(block.timestamp >= info_by_prop[msg.sender][prop_h].next_payday){
             while(block.timestamp > info_by_prop[msg.sender][prop_h].next_payday){
-                transfer(proposals[prop_h].creator, proposals[prop_h].cost);
+                transfersub(proposals[prop_h].creator, proposals[prop_h].cost, prop_h);
             }
             return true;
         }
