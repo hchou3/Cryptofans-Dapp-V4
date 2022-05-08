@@ -74,10 +74,6 @@ App = {
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleView(jQuery('#sub_toview').val());
    });
-     $(document).on('click', '#prov_collect', function(){//NEEDS IMPLEMENTATION
-      App.populateAddress().then(r => App.handler = r[0]);
-      App.handleTransfer(jQuery('#eth_coll_add').val(), jQuery('#eth_amount').val());
-   });
       $(document).on('click', '#get_balance', function(){//fortesting
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleBalance();
@@ -167,7 +163,8 @@ App = {
       }).then(function(result, err){
             if(result){
               var title=ethers.utils.parseBytes32String(result[0]);
-              var cost=parseInt(result[1])/1000000000000000000;
+              console.log(result[1]);
+              var cost=parseInt(result[1]);
               var period=Math.floor(parseInt(result[2])/86400);
               var time;
               if(period==30){
@@ -180,11 +177,11 @@ App = {
               console.log(title+" "+cost+" "+period+" "+desc);
               var title='Title: '+title;
               var cost='Cost: '+cost;
-              var period='Subcription Period: '+period;
+              var time='Subcription Period: '+time;
               var desc= 'About: '+desc;
               $('#search_title').text(title);
               $('#search_cost').text(cost);
-              $('#search_period').text(period);
+              $('#search_period').text(time);
               $('#search_info').text(desc);
               console.log("Subcripton name found");
             }else {
@@ -218,19 +215,53 @@ App = {
   },
   // handleSub not working
   handleSub:function(subs_name){//params:proposal name   o/inputs: eth amount, account to send to
-    
+    var str32name=ethers.utils.formatBytes32String(subs_name);
+    web3.eth.getAccounts( function(error, accounts){
+      var account = accounts[0];
+    App.contracts.Cryptofans.deployed().then(function (instance) {
+      accessinstance=instance;
+      console.log(str32name);
+      return accessinstance.sub_to_plan(str32name,{from: account}); // added from parameter
+    }).then(function (result) {
+      if(result){
+        console.log("sub successful");
+        if(parseInt(result.receipt.status) == 1)
+        alert(account + " sub successfully")
+        else
+        alert(account + " sub not done successfully due to revert")
+        } else {
+        alert(account + "sub failed")
+        }  
+        });
+    });
   },
   handleAccess:function(subs_name){// does not work
-  
+    str32name=ethers.utils.formatBytes32String(subs_name);
+    web3.eth.getAccounts( function(error, accounts){
+      var account = accounts[0];
+    App.contracts.Cryptofans.deployed().then(function (instance) {
+      accessinstance=instance;
+      console.log(str32name);
+      return accessinstance.accessSubscription(str32name,{from: account}); // added from parameter
+    }).then(function (result) {
+      if(result){
+        console.log("access successful");
+        if(parseInt(result.receipt.status) == 1)
+        alert(account + " access successfully")
+        else
+        alert(account + " access not done successfully due to revert")
+        } else {
+        alert(account + "access failed")
+        }  
+        });
+    });
   },
 
   handleCreate:function(str1, amnt, prd, desc){// create is working
     var str32name;
-    var weitoEth;
     var periodsecs;
     var accessinstance;
     str32name=ethers.utils.formatBytes32String(str1);
-    weitoEth=amnt*App.value;
     if(prd=="Monthly"){
       periodsecs= 2628000;
     }
@@ -244,7 +275,7 @@ App = {
     App.contracts.Cryptofans.deployed().then(function (instance) {
       accessinstance=instance;
       console.log(str32name);
-      return accessinstance.createSubscription(str32name, weitoEth, periodsecs, desc, {from: account}); // added from parameter
+      return accessinstance.createSubscription(str32name, amnt, periodsecs, desc, {from: account}); // added from parameter
     }).then(function (result) {
       if(result){
         console.log("proposal created");
@@ -270,7 +301,6 @@ App = {
       return accessinstance.on_off_switch(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
         if(result){
-          console.log(result);
           console.log("proposal toggled");
           if(parseInt(result.receipt.status) == 1)
           alert(account + " toggling done successfully")
@@ -311,10 +341,6 @@ App = {
         }  
         });
     });
-  },
-
-  handleTransfer:function(addr, amount){// transfer is a payment // not working
-    
   },
 
 abi:[

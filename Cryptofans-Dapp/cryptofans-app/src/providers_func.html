@@ -72,9 +72,9 @@
                     <label for="sub_name">Subscription Name</label>
                     <input type="text" class="form-control" id="create_name" placeholder="Enter Name" required>
                 </div>   
-                <div class="col-md-2 mb-3">
-                    <label for="sub_cost">Cost</label>
-                    <input type="number" class="form-control " id="create_cost" placeholder="Enter Cost(ETH)" value="0" required>
+                <div class="col-md-4 mb-3">
+                    <label for="sub_cost">Cost (wei/SubCoin token)</label>
+                    <input type="text" class="form-control " id="create_cost" placeholder="Enter Cost(SBC/wei)" value="0" required>
                 </div>   
                 <div class="col-md-4 mb-3">
                     <label for="sub_period">Subscription Period</label>
@@ -155,34 +155,6 @@
             <div class="row" style="padding-top:10px"></div>
             <div class="row" style="padding-left:40px">
                 <button class="btn btn-primary" type="button" id="prov_onoff">Toggle</button>
-            </div>
-        </div>  
-        </form>
-        <div class="row" style="padding-top:10px"></div>
-        </span>
-    </body>
-
-    <body> 
-        <div class="row" style="padding-top:40px"></div>
-        <span class="border border-primary">
-        <h4 style="color:rgb(98, 173, 235)">COLLECT FUNDS</h4>
-        <form>
-            <div class="row" style="padding-left:40px">
-            <div class="form-row">
-                <div class="col-md-9 mb-10">
-                    <label for="eth_coll_add">Enter Ethereum Account Address</label>
-                    <input type="text" class="form-control " id="eth_coll_add" placeholder="Ethereum Address" required>
-                </div> 
-                <div class="col-md-9 mb-10">
-                    <div class="row" style="padding-top:10px"></div>
-                    <label for="eth_amount">Enter Amount to Transfer</label>
-                    <input type="number" class="form-control " id="eth_amount" placeholder="Amount (ETH)" required>
-                </div> 
-            </div>
-            </div>
-            <div class="row" style="padding-top:10px"></div>
-            <div class="row" style="padding-left:40px">
-                <button class="btn btn-primary" type="button" id="prov_collect">Transfer</button>
             </div>
         </div>  
         </form>

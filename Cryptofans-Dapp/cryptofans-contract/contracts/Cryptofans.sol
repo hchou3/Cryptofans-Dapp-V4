@@ -120,30 +120,17 @@ contract Cryptofans is IERC20 {
     }
 
     function transfersub(address receiver, uint256 numTokens, bytes32 prop_h) public returns (bool) {
-
-
-
-
          if(block.timestamp < info_by_prop[msg.sender][prop_h].next_payday){
             revert("Payment up to date.");
         }else{ 
-
            if(transfer(receiver, numTokens) ){
-
-           
             info_by_prop[msg.sender][prop_h].next_payday= info_by_prop[msg.sender][prop_h].next_payday+ proposals[prop_h].period;
-           
-            
             return true;
            }
            else{
-
                return false;
            }
         }
-
-       
-        
     }
 
    
@@ -314,7 +301,7 @@ contract Cryptofans is IERC20 {
     }
 
     //###################
-    function accessSubscscription(bytes32 prop_h) public payable onlySubscriber returns(bool){
+    function accessSubscription(bytes32 prop_h) public payable onlySubscriber returns(bool){
         if(info_by_prop[msg.sender][prop_h].in_use == false){
             return false;
         }
