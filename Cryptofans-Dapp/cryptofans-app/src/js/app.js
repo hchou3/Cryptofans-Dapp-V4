@@ -77,7 +77,7 @@ App = {
       $(document).on('click', '#get_balance', function(){//fortesting
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleBalance();
- });
+   });
    },
 
    populateAddress : async function(){
@@ -85,18 +85,18 @@ App = {
       return await ethereum.request({method : 'eth_requestAccounts'});
   },  
 
-  handleBalance:function(){//works
+  handleBalance: async function(){//works
     $('#disp_balance').text("Please register to have a balance");
     var cfans_instance;
     web3.eth.getAccounts( function(error, accounts){
       var account = accounts[0];
       App.contracts.Cryptofans.deployed().then( function(instance) {
         cfans_instance=instance;
-        return cfans_instance.checkbalanceOf({from: account});
+        return cfans_instance.checkbalanceOf({from: App.handler});
       }).then(function(result, err){
-            console.log(result.c);
+            console.log(result.toString());
             if(result){
-                $('#disp_balance').text(parseInt(result.c)+" SBC");
+                $('#disp_balance').text(result.toString()+" SBC");
                 console.log("balance displayed");
             } else {
                 alert(account + " balance failed")
