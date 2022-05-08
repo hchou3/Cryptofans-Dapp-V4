@@ -94,9 +94,9 @@ App = {
         cfans_instance=instance;
         return cfans_instance.checkbalanceOf({from: account});
       }).then(function(result, err){
-            console.log(result);
+            console.log(result.c);
             if(result){
-                $('#disp_balance').text(parseInt(result)+" SBC");
+                $('#disp_balance').text(parseInt(result.c)+" SBC");
                 console.log("balance displayed");
             } else {
                 alert(account + " balance failed")
@@ -224,7 +224,6 @@ App = {
       return accessinstance.sub_to_plan(str32name,{from: account}); // added from parameter
     }).then(function (result) {
       if(result){
-        console.log("sub successful");
         if(parseInt(result.receipt.status) == 1)
         alert(account + " sub successfully")
         else
@@ -300,6 +299,7 @@ App = {
       accessinstance=instance;
       return accessinstance.on_off_switch(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
+        console.log(result)
         if(result){
           console.log("proposal toggled");
           if(parseInt(result.receipt.status) == 1)
@@ -325,6 +325,7 @@ App = {
       accessinstance=instance;
       return accessinstance.view_subs(str32name,  {from: account}); // added from parameter
       }).then(function (result) {
+        console.log(result)
         if(result){
           if(result.length==0){
             $('#subs_display').text("No subscribers yet!");
