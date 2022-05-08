@@ -63,18 +63,27 @@ contract Cryptofans is IERC20 {
 
 
     function getcoins() private{
-    balances[msg.sender] = totalSupply_;
+        if(subscribers[msg.sender].registered == false && providers[msg.sender].registered == true){
+            balances[msg.sender] += totalSupply_;
+        }else{
+            balances[msg.sender] = totalSupply_;
+        }
     }
 
      function getcoinsprov() private{
-    balances[msg.sender] = ptotalSupply_;
+         if(subscribers[msg.sender].registered == true && providers[msg.sender].registered == false){
+            balances[msg.sender] += ptotalSupply_;
+        }else{balances[msg.sender] = ptotalSupply_;}
     }
 
     function balanceOf(address tokenOwner) public override view returns (uint256) {
         return balances[tokenOwner];
     }
 
-    function checkbalancef() public view returns (uint256) {
+    function checkbalanceOf() public view returns (uint256) {
+        if(subscribers[msg.sender].registered == false && providers[msg.sender].registered == false){
+            revert("Please register to have a balance.");
+        }
         return balances[msg.sender];
     }
 
@@ -128,8 +137,6 @@ contract Cryptofans is IERC20 {
 
     //////CRYPTOFANS MARKETPLACE FUNCTIONS//////
     function registerasSubscriber () public {
-     
-        getcoins();
         // if statement to check if they already registered
         // nested mapping goes here??
         if (subscribers[msg.sender].registered == true){
@@ -137,6 +144,7 @@ contract Cryptofans is IERC20 {
             // change revert function to whatever necessary if it doesnt work
         }
         else{
+            getcoins();
             subscribers[msg.sender].registered = true;
             subscribers[msg.sender].addy = msg.sender;
         }
@@ -144,21 +152,18 @@ contract Cryptofans is IERC20 {
    
     
     function registerasProvider () public {
-
-       getcoinsprov();
-       
         // if statement to check if ti exists
         if (providers[msg.sender].registered == true){
             revert("You are already registered");
             // change revert function to whatever necessary if it doesnt work
         }else {
+            getcoinsprov();
             providers[msg.sender].registered = true;
             providers[msg.sender].add = msg.sender;
         }
     }
 
     modifier onlyProvider(){ //modifier for provider
-
         require(providers[msg.sender].registered == true) ;
         _;
     }
@@ -202,8 +207,7 @@ contract Cryptofans is IERC20 {
        if(msg.sender.balance<1){
             revert("Your balance is not large enough to transfer.");
        }else{
-        address payable newowner = payable(newholder);
-        (newowner).transfer(amount);
+           transfer(newholder, amount);
        }
     }
     //####################
@@ -220,7 +224,7 @@ contract Cryptofans is IERC20 {
         info_by_prop[msg.sender][prop_h]=subPlan(true, block.timestamp, block.timestamp);
         info_by_prop[msg.sender][prop_h].next_payday = block.timestamp;
         info_by_prop[msg.sender][prop_h].in_use = true;
-        pay(prop_h);
+        transfer(proposals[prop_h].creator, proposals[prop_h].cost);// ERC20 transfer()
         sub_ids[proposals[prop_h].creator][proposals[prop_h].key].push(subscribers[msg.sender].addy);
     }
    
@@ -287,7 +291,7 @@ contract Cryptofans is IERC20 {
         }
         if(block.timestamp >= info_by_prop[msg.sender][prop_h].next_payday){
             while(block.timestamp > info_by_prop[msg.sender][prop_h].next_payday){
-                pay(prop_h);
+                transfer(proposals[prop_h].creator, proposals[prop_h].cost);
             }
             return true;
         }

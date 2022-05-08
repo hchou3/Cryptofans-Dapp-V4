@@ -39,15 +39,24 @@
             vertical-align: middle;
         }
     </style>
+    <style>
+      body {
+        background-image: url('./images/cryptofansbkgrnd.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: 100% 100%;
+      }
+      </style>
+    <link rel="icon" type="image/x-icon" href="./images/subcoinv1.ico">
     </head>
    
     <body>
         <div>
-            <h3>WELCOME TO CRYPTOFANS</h3>      
+            <h3>CRYPTOFANS</h3>      
         </div>
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">SUBFANS LOGO</a>
+            <a class="navbar-brand" href="#"><img src="./images/subcoinv1.ico" alt="sbc_logo" width="75" height="75"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -83,7 +92,7 @@
           <h2>Balance</h2>
           <!-- Trigger the modal with a button -->
           
-          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Check Balance</button>
+          <button type="button" class="btn btn-info btn-lg" id="get_balance" data-toggle="modal" data-target="#myModal">Check Balance</button>
         
           <!-- Modal -->
           <div class="modal fade" id="myModal" role="dialog">
@@ -101,7 +110,8 @@
                 </div>
                 
                 <div class="modal-body">
-                  <p>Subcoin Token</p>
+                  <p><img src="./images/subcoin_logo.jpg" alt="sbc_logo" width="150" height="150">SubCoin Tokens:</p>
+                  <div id="disp_balance"></div>
                 </div>
              
                 <div class="modal-footer">
@@ -116,7 +126,8 @@
         </span>
 
     </div>
-        </body>
-   
+    </body>
+    <body>
 
+    </body>
 </html>

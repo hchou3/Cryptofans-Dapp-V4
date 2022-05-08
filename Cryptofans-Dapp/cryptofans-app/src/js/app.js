@@ -78,9 +78,9 @@ App = {
       App.populateAddress().then(r => App.handler = r[0]);
       App.handleTransfer(jQuery('#eth_coll_add').val(), jQuery('#eth_amount').val());
    });
-      $(document).on('click', '#dopay', function(){//fortesting
+      $(document).on('click', '#get_balance', function(){//fortesting
       App.populateAddress().then(r => App.handler = r[0]);
-      App.handlePayment(jQuery('#payamt').val());
+      App.handleBalance();
  });
    },
 
@@ -88,6 +88,26 @@ App = {
     // App.handler=App.web3.givenProvider.selectedAddress;
       return await ethereum.request({method : 'eth_requestAccounts'});
   },  
+
+  handleBalance:function(){//works
+    $('#disp_balance').text("Please register to have a balance");
+    var cfans_instance;
+    web3.eth.getAccounts( function(error, accounts){
+      var account = accounts[0];
+      App.contracts.Cryptofans.deployed().then( function(instance) {
+        cfans_instance=instance;
+        return cfans_instance.checkbalanceOf({from: account});
+      }).then(function(result, err){
+            console.log(result);
+            if(result){
+                $('#disp_balance').text(parseInt(result)+" SBC");
+                console.log("balance displayed");
+            } else {
+                alert(account + " balance failed")
+            }   
+        });
+    });
+  },
   
   handleSubReg: function(){//works
     var cfans_instance;
