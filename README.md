@@ -12,6 +12,8 @@ Now cd into
 
 "/Cryptofans-Dapp-V4/Cryptofans-Dapp/cryptofans-contract/contracts"
 
+enter "npm install" for use of HDWalletProvider
+
 And in your terminal enter 
 
 “truffle migrate --reset --network ropsten”, and press enter 
