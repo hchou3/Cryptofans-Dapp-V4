@@ -22,7 +22,7 @@
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
- const mnemonic = "use erosion raven dinner season update flee genius squirrel manual obscure define"; 
+ const mnemonic = "(enter mnemonic here)"; 
 
 module.exports = {
   /**
