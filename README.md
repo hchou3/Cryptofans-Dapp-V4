@@ -18,4 +18,4 @@ Now CD into :'/Cryptofans-Dapp/cryptofans-app'
 
 In your terminal type     “npm install”    and  press enter.
 
-Then in your terminal type  “npm start”
+Then in your terminal type  “npm start”, the Marketplace should be accessible on localhost
