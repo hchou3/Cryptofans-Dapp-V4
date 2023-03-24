@@ -11,7 +11,7 @@ Deployment Instructions:
 
 4. If first deployment: truffle compile
 
-5. To deploy: truffle migrate --reset --network ropsten
+5. To deploy: truffle migrate --reset --network ropsten (or any other network)
 
 
 Now CD into :'/Cryptofans-Dapp/cryptofans-app'
